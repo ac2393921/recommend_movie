@@ -1,0 +1,12 @@
+version: '3'
+services:
+  python:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    volumes:
+      - ./:/src
+    tty: true
+    working_dir: /src
+    ports: 
+      - '5000:5000'
