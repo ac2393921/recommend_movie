@@ -4,9 +4,12 @@ services:
     build:
       context: .
       dockerfile: ./docker/Dockerfile
+      target: develop
     volumes:
       - ./:/src
+      # - ./docker/mlflow/tmp:/src/venv
+    working_dir: "/src"
     tty: true
-    working_dir: /src
     ports: 
-      - '5000:5000'
+      - "5000:5000"
+    restart: always
