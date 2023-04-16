@@ -1,6 +1,7 @@
 from loguru import logger
 
 from src.jobs.retrieve import DataLoader
+from src.jobs.train import Train
 from src.models.random_recommender import RandomRecommender
 
 if __name__ == "__main__":
@@ -13,4 +14,7 @@ if __name__ == "__main__":
 
     logger.info("start recommend")
     recommender = RandomRecommender()
-    recommender.run(movies)
+    train = Train()
+    metrics = train.train_and_evaluate(model=recommender, movies=movies)
+
+    logger.info(f"metrics: {metrics}")

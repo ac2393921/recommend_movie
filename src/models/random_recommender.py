@@ -70,7 +70,3 @@ class RandomRecommender(BaseRecommender):
         return RecommendResult(
             rating=movie_rating_predict.rating, user2items=pred_user2items
         )
-
-
-if __name__ == "__main__":
-    RandomRecommender().run()
