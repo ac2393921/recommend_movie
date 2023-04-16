@@ -28,6 +28,11 @@ class DataLoader:
         self.data_path = data_path
 
     def load_data(self) -> Dataset:
+        """データを読み込み、Datasetに変換する
+
+        Returns:
+            Dataset: データセット
+        """
         logger.info("Start load data")
         ratings, movie_content = self._load()
         movie_train, movie_test = self._split_data(ratings)
@@ -48,26 +53,62 @@ class DataLoader:
 
     @pa.check_types
     def _split_data(
-        self, movie: DataFrame[MoviesSchema]
+        self, movies: DataFrame[MoviesSchema]
     ) -> Tuple[DataFrame[MoviesSchema], DataFrame[MoviesSchema]]:
+        """データを学習用とテスト用に分割する
+
+        Args:
+            movies (DataFrame[MoviesSchema]): 映画データ
+
+        Returns:
+            Tuple[DataFrame[MoviesSchema], DataFrame[MoviesSchema]]: 学習用データ、テスト用データ
+        """
         logger.info("Start split data")
 
         # 学習用とテスト用にデータを分割する
         # 各ユーザーの直近の映画5件を評価用に使い、それ以外を学習用とする
         # まずは、それぞれのユーザーが評した映画の順序を計算する
         # 直近付与した映画から順番を付与していく（0始まり）
-        movie["rating_order"] = movie.groupby("user_id")["timestamp"].rank(
+        movies["rating_order"] = movies.groupby("user_id")["timestamp"].rank(
             method="first", ascending=False
         )
 
-        movie_train = movie[movie.rating_order > self.num_test_items]
+        movie_train = movies[movies.rating_order > self.num_test_items]
         movie_train = MoviesSchema(movie_train)
-        movie_test = movie[movie.rating_order <= self.num_test_items]
+        movie_test = movies[movies.rating_order <= self.num_test_items]
         movie_train = MoviesSchema(movie_test)
 
         return movie_train, movie_test
 
+    @pa.check_types
     def _load(self) -> Tuple[DataFrame[MoviesRatingSchema], DataFrame[MoviesSchema]]:
+        """データを読み込む
+
+        Returns:
+            Tuple[DataFrame[MoviesRatingSchema], DataFrame[MoviesSchema]]: 映画評価データ、映画データ
+        """
+        movies = self._load_movies()
+        ratings = self._load_ratings()
+
+        # データを結合する
+        logger.info("merge ratings data")
+        movies_ratings = ratings.merge(movies, on="movie_id")
+        movies_ratings = MoviesRatingSchema(movies_ratings)
+
+        logger.info(movies_ratings.info())
+        logger.info(movies_ratings.head())
+        logger.info(movies.info())
+        logger.info(movies.head())
+
+        return movies_ratings, movies
+
+    @pa.check_types
+    def _load_movies(self) -> DataFrame[MoviesSchema]:
+        """映画データを読み込む
+
+        Returns:
+            DataFrame[MoviesSchema]: 映画データ
+        """
         # 映画の情報の読み込み
         logger.info("load movies data")
         m_cols = ["movie_id", "title", "genres"]
@@ -101,6 +142,15 @@ class DataLoader:
         movies = movies.merge(movie_tags, on="movie_id", how="left")
         movies = MoviesSchema(movies)
 
+        return movies
+
+    @pa.check_types
+    def _load_ratings(self) -> DataFrame[MoviesRatingSchema]:
+        """映画評価データを読み込む
+
+        Returns:
+            DataFrame[MoviesRatingSchema]: 映画評価データ
+        """
         # ユーザーの評価情報の読み込み
         r_cols = ["user_id", "movie_id", "rating", "timestamp"]
         ratings = pd.read_csv(
@@ -115,15 +165,4 @@ class DataLoader:
         ratings = ratings[ratings.user_id.isin(valid_user_ids)]
         ratings = RatingsBaseSchema(ratings)
 
-        # データを結合する
-        logger.info("merge ratings data")
-        movies_ratings = ratings.merge(movies, on="movie_id")
-        movies_ratings = MoviesRatingSchema(movies_ratings)
-
-        logger.info(movies_ratings.info())
-        logger.info(movies_ratings.head())
-
-        logger.info(movies.info())
-        logger.info(movies.head())
-
-        return movies_ratings, movies
+        return ratings
