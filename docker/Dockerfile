@@ -45,3 +45,5 @@ RUN poetry install
 
 FROM builder-base as develop
 COPY --from=builder-base $PYSETUP_PATH/.venv/lib/$PYTHON_VERSHIN/site-packages /user/local/lib/$PYTHON_VERSHIN/site-packages
+
+ENV PYTHONPATH /src
