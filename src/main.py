@@ -1,6 +1,7 @@
 from loguru import logger
 
 from src.jobs.retrieve import DataLoader
+from src.models.random_recommender import RandomRecommender
 
 if __name__ == "__main__":
     logger.info("Start main.py")
@@ -9,3 +10,7 @@ if __name__ == "__main__":
     )
     movies = data_loader.load_data()
     logger.info("finish data loader")
+
+    logger.info("start recommend")
+    recommender = RandomRecommender()
+    recommender.run(movies)

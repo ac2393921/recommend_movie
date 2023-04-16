@@ -12,7 +12,7 @@ class BaseRacommender(ABC):
     def recommend(self, dataset: Dataset, **kwargs) -> RecommendResult:
         pass
 
-    def run_sample(self, movies: Dataset) -> None:
+    def run(self, movies: Dataset) -> None:
         recommend_result = self.recommend(movies)
         metrics = MetricCaluculator().calc(
             movies.test.rating.tolist(),

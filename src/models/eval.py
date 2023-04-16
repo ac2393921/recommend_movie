@@ -37,7 +37,9 @@ class MetricCaluculator:
         precision_at_k = self._calc_precision_at_k(true_user2items, pred_user2items, k)
         recall_at_k = self._calc_recall_at_k(true_user2items, pred_user2items, k)
 
-        return Metrics(rmse, precision_at_k, recall_at_k)
+        return Metrics(
+            rmse=rmse, precision_at_k=precision_at_k, recall_at_k=recall_at_k
+        )
 
     def _precision_at_k(
         self, true_items: Dict[int, List[int]], pred_items: Dict[int, List[int]], k: int

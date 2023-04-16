@@ -145,11 +145,11 @@ class DataLoader:
         return movies
 
     @pa.check_types
-    def _load_ratings(self) -> DataFrame[MoviesRatingSchema]:
+    def _load_ratings(self) -> DataFrame[RatingsBaseSchema]:
         """映画評価データを読み込む
 
         Returns:
-            DataFrame[MoviesRatingSchema]: 映画評価データ
+            DataFrame[RatingsBaseSchema]: 映画評価データ
         """
         # ユーザーの評価情報の読み込み
         r_cols = ["user_id", "movie_id", "rating", "timestamp"]
