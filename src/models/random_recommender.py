@@ -2,12 +2,12 @@ from collections import defaultdict
 
 import numpy as np
 
-from src.models.base_recommender import BaseRacommender
+from src.models.base_recommender import BaseRecommender
 from src.models.dataset import Dataset
 from src.models.recommend_result import RecommendResult
 
 
-class RandomRecommender(BaseRacommender):
+class RandomRecommender(BaseRecommender):
     def recommend(self, dataset: Dataset, **kwargs) -> RecommendResult:
         """ランダムにレコメンドする
 

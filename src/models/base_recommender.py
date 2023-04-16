@@ -7,7 +7,7 @@ from src.models.eval import MetricCaluculator
 from src.models.recommend_result import RecommendResult
 
 
-class BaseRacommender(ABC):
+class BaseRecommender(ABC):
     @abstractmethod
     def recommend(self, dataset: Dataset, **kwargs) -> RecommendResult:
         pass
