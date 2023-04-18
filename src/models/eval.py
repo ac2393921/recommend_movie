@@ -2,7 +2,7 @@ from typing import Dict, List
 
 import numpy as np
 from pydantic import BaseModel
-
+from loguru import logger
 
 class Metrics(BaseModel):
     """評価指標"""
@@ -137,7 +137,10 @@ class MetricCaluculator:
             float: Precision@k
         """
         scores = []
+        # logger.debug(true_user2items)
+        # logger.debug(pred_user2items)
         for user_id in true_user2items.keys():
+            logger.debug(user_id)
             p_at_k = self._precision_at_k(
                 true_user2items[user_id], pred_user2items[user_id], k
             )
