@@ -76,7 +76,7 @@ class DataLoader:
         movie_train = movies[movies.rating_order > self.num_test_items]
         movie_train = MoviesSchema(movie_train)
         movie_test = movies[movies.rating_order <= self.num_test_items]
-        movie_train = MoviesSchema(movie_test)
+        movie_test = MoviesSchema(movie_test)
 
         return movie_train, movie_test
 
@@ -95,10 +95,9 @@ class DataLoader:
         movies_ratings = ratings.merge(movies, on="movie_id")
         movies_ratings = MoviesRatingSchema(movies_ratings)
 
-        logger.info(movies_ratings.info())
-        logger.info(movies_ratings.head())
-        logger.info(movies.info())
-        logger.info(movies.head())
+        logger.info(
+            f"unique_users={len(movies_ratings.user_id.unique())}, unique_movies={len(movies_ratings.movie_id.unique())}"
+        )
 
         return movies_ratings, movies
 
@@ -162,7 +161,7 @@ class DataLoader:
         )
         # ユーザー数をnum_usersに制限する
         valid_user_ids = sorted(ratings.user_id.unique())[: self.num_users]
-        ratings = ratings[ratings.user_id.isin(valid_user_ids)]
+        ratings = ratings[ratings.user_id <= max(valid_user_ids)]
         ratings = RatingsBaseSchema(ratings)
 
         return ratings
