@@ -12,6 +12,7 @@ isort = "^5.12.0"
 pydantic = "^1.10.7"
 pandas = "^2.0.0"
 pandera = "^0.14.5"
+mlxtend = "^0.22.0"
 
 
 [tool.poetry.group.dev.dependencies]
