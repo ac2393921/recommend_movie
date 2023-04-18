@@ -1,17 +1,19 @@
 from collections import defaultdict
 
 import numpy as np
+from loguru import logger
 
 from src.models.base_recommender import BaseRecommender
 from src.models.dataset import Dataset
 from src.models.recommend_result import RecommendResult
-from loguru import logger
+
 
 class PopularityRecommender(BaseRecommender):
     def recommend(self, dataset: Dataset, **kwargs) -> RecommendResult:
         # 評価値の閾値
-        minimum_num_rating = kwargs.get("minimum_num_rating", 1)
+        minimum_num_rating = kwargs.get("minimum_num_rating", 200)
         # 各アイテムごとの平均の評価値を計算し、その平均評価値を予測値とする。
+
         movie_rating_average = dataset.train.groupby("movie_id").agg(
             {"rating": np.mean}
         )
@@ -39,12 +41,14 @@ class PopularityRecommender(BaseRecommender):
             .sort_values(by=[("rating", "mean")], ascending=False)
             .index.tolist()
         )
-        
+
         for user_id in dataset.train.user_id.unique():
             for movie_id in movies_sorted_by_rating:
                 if movie_id not in user_watched_movies[user_id]:
                     pred_user2items[user_id].append(movie_id)
                     if len(pred_user2items[user_id]) >= 10:
                         break
-        
-        return RecommendResult(rating=movie_rating_predict.rating_pred, user2items=pred_user2items)
+
+        return RecommendResult(
+            rating=movie_rating_predict.rating_pred, user2items=pred_user2items
+        )
