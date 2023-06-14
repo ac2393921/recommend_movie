@@ -3,6 +3,7 @@ from loguru import logger
 from src.jobs.retrieve import DataLoader
 from src.jobs.train import Train
 from src.models.association_recommender import AssociationRecommender
+from src.models.nmf_recommender import NMFRecommender
 from src.models.popularity_recommender import PopularityRecommender
 from src.models.random_recommender import RandomRecommender
 
@@ -18,7 +19,9 @@ if __name__ == "__main__":
     recommender = AssociationRecommender()
     # recommender = PopularityRecommender()
     # recommender = RandomRecommender()
-    train = Train()
-    metrics = train.train_and_evaluate(model=recommender, movies=movies)
+    recommender = NMFRecommender()
+    recommender.recommend(dataset=movies)
+    # train = Train()
+    # metrics = train.train_and_evaluate(model=recommender, movies=movies)
 
-    logger.info(f"metrics: {metrics}")
+    # logger.info(f"metrics: {metrics}")
